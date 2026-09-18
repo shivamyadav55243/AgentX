@@ -1,38 +1,35 @@
-import os
 import json
-import time
-from dotenv import load_dotenv
-from google import genai
+import re
+from agents.llm import generate_text
 
-load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+_PLACEHOLDER_PATTERN = re.compile(r"^question\s*\d+$", re.IGNORECASE)
+
 
 def plan(topic, max_retries=3):
-    prompt = f"""Analyze the topic "{topic}" and decide how many sub-questions
-it needs for thorough research (between 2 and 6, based on complexity — simple
-topics need fewer, broad topics need more).
+    prompt = f"""Analyze the topic "{topic}" and write 2 to 6 specific, real
+research sub-questions about it (more for broad topics, fewer for narrow ones).
 
-Respond ONLY with a JSON array of strings, nothing else.
-Example: ["question 1", "question 2", "question 3"]"""
+Do NOT copy the example format below literally — write actual, topic-specific
+questions about "{topic}".
+
+Respond ONLY with a JSON array of strings, nothing else. Example shape only
+(write your own real questions, not these words):
+["What caused X to happen?", "How did Y change over time?"]"""
 
     for attempt in range(1, max_retries + 1):
         try:
-            response = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-            text = response.text.strip()
+            text = generate_text(prompt, max_retries=1)
             text = text.replace("```json", "").replace("```", "").strip()
             sub_questions = json.loads(text)
 
             if not isinstance(sub_questions, list) or len(sub_questions) == 0:
                 raise ValueError("Planner returned an empty or invalid list")
 
-            return sub_questions
+            if any(_PLACEHOLDER_PATTERN.match(q.strip()) for q in sub_questions):
+                raise ValueError("Planner echoed placeholder text instead of real questions")
 
+            return sub_questions
         except Exception as e:
             print(f"⚠️ Planner attempt {attempt} failed: {e}")
             if attempt == max_retries:
-                print("❌ Planner failed after all retries. Using a fallback question.")
                 return [f"General overview of {topic}"]
-            time.sleep(2)

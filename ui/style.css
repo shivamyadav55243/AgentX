@@ -1,85 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .stApp {
-    background: radial-gradient(circle at top left, #1a1a2e 0%, #0f0f1a 60%, #05050a 100%);
-    color: #e8e8f0;
+    background: #0A0A0A;
 }
 
-.agentx-hero {
-    text-align: center;
-    padding: 2rem 0 1rem 0;
-}
-.agentx-hero h1 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 3rem;
-    background: linear-gradient(90deg, #6a5cff, #00d4ff, #6a5cff);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 4s linear infinite;
-}
-@keyframes shine {
-    to { background-position: 200% center; }
-}
-.agentx-hero p {
-    color: #9a9ab8;
-    font-size: 1.05rem;
-}
+/* Badges row under the title */
+h1, h2, h3 { letter-spacing: -0.01em; }
 
-.glass-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 18px;
-    padding: 1.5rem;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    margin-bottom: 1.2rem;
-}
-.glass-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(106,92,255,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
-}
-
-div.stButton > button {
-    background: linear-gradient(135deg, #6a5cff, #00c6ff);
-    color: white;
+/* Buttons — carrot accent everywhere */
+div.stButton > button, div.stFormSubmitButton > button {
+    background: linear-gradient(135deg, #FF6A3D, #E8491D);
+    color: #0A0A0A;
     border: none;
-    border-radius: 12px;
-    padding: 0.6rem 1.4rem;
     font-weight: 600;
-    box-shadow: 0 6px 20px rgba(106,92,255,0.4);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 16px rgba(255, 106, 61, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-div.stButton > button:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 10px 28px rgba(0,198,255,0.45);
+div.stButton > button:hover, div.stFormSubmitButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 106, 61, 0.4);
 }
 
 div[data-testid="stDownloadButton"] > button {
-    background: linear-gradient(135deg, #00b09b, #96c93d);
+    background: linear-gradient(135deg, #FF6A3D, #E8491D);
+    color: #0A0A0A;
     border: none;
-    border-radius: 12px;
     font-weight: 600;
-    box-shadow: 0 6px 20px rgba(0,176,155,0.35);
 }
 
-.stTextInput > div > div > input {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 12px;
-    color: white;
-    padding: 0.7rem;
+/* Pills (topic suggestions) */
+[data-testid="stPills"] label {
+    border-color: #2A2A2A !important;
 }
 
-.streamlit-expanderHeader {
-    background: rgba(255,255,255,0.03);
-    border-radius: 10px;
+/* Cards / containers */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: #111111;
+    border-color: #262626 !important;
+    border-radius: 14px;
 }
 
-hr { border-color: rgba(255,255,255,0.08); }
+/* Chat messages */
+[data-testid="stChatMessage"] {
+    background: #131313;
+    border: 1px solid #262626;
+    border-radius: 14px;
+    padding: 6px 4px;
+    margin-bottom: 8px;
+}
+[data-testid="stChatMessage"]:nth-of-type(odd) {
+    border-left: 3px solid #FF6A3D;
+}
+[data-testid="stChatMessage"]:nth-of-type(even) {
+    border-left: 3px solid #4A4A4A;
+}
+
+/* Chat input pinned box */
+[data-testid="stChatInput"] textarea {
+    background: #131313 !important;
+    border-color: #2A2A2A !important;
+}
+
+/* Narrow history column entries */
+.history-col button {
+    text-align: left !important;
+    font-size: 12.5px !important;
+    padding: 6px 10px !important;
+    background: #131313 !important;
+    color: #E5E5E5 !important;
+    box-shadow: none !important;
+}
+.history-col button:hover {
+    background: #1c1c1c !important;
+    border-color: #FF6A3D !important;
+}
+.history-col .stCaption { opacity: 0.55; }
+
+hr { border-color: #2A2A2A; }
+
+/* Floating history toggle button — fixed top-left */
+.history-toggle-wrap {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1000;
+}
+.history-toggle-wrap button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6A3D, #E8491D);
+    color: #0A0A0A;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 4px 14px rgba(255, 106, 61, 0.45);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.history-toggle-wrap button:hover {
+    transform: scale(1.1) rotate(8deg);
+    box-shadow: 0 6px 22px rgba(255, 106, 61, 0.6);
+}
+.history-toggle-wrap button:active {
+    transform: scale(0.92);
+}
+
+/* Push page content down so it clears the floating button */
+.block-container {
+    padding-top: 3.2rem;
+}
+
+/* Slide-in animation for the history panel each time it opens */
+@keyframes slideInLeft {
+    from { transform: translateX(-45px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+.history-panel {
+    animation: slideInLeft 0.35s ease forwards;
+}

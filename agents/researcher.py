@@ -1,27 +1,39 @@
 import os
-import time
 from dotenv import load_dotenv
-from google import genai
+from tavily import TavilyClient
+from agents.llm import generate_text
 
 load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
-def research(sub_question, max_retries=3):
-    prompt = f"""Research this question and give a concise, factual answer
-with key details: {sub_question}"""
 
-    for attempt in range(1, max_retries + 1):
-        try:
-            response = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-            if not response.text or len(response.text.strip()) == 0:
-                raise ValueError("Empty response from model")
-            return response.text
+def research(sub_question, max_retries=5):
+    sources = []
+    search_context = ""
+    try:
+        search_results = tavily_client.search(sub_question, max_results=4)
+        for r in search_results.get("results", []):
+            search_context += f"\nSource: {r['title']} ({r['url']})\n{r['content']}\n"
+            sources.append({"title": r["title"], "url": r["url"]})
+    except Exception as e:
+        print(f"⚠️ Web search failed for '{sub_question}': {e}")
+        search_context = "(No web search results available — using general knowledge.)"
 
-        except Exception as e:
-            print(f"⚠️ Researcher attempt {attempt} failed for '{sub_question}': {e}")
-            if attempt == max_retries:
-                return f"[Research failed for this question after {max_retries} attempts]"
-            time.sleep(2)
+    prompt = f"""Based on the following web search results, give a concise,
+factual answer to this question: {sub_question}
+
+Search results:
+{search_context}
+
+Write a clear answer using only information from these sources.
+Do not include a sources list yourself, that will be added separately."""
+
+    try:
+        answer = generate_text(prompt, max_retries=max_retries)
+        return {"answer": answer, "sources": sources}
+    except Exception as e:
+        print(f"⚠️ Researcher failed for '{sub_question}': {e}")
+        return {
+            "answer": f"[Research failed for this question: {e}]",
+            "sources": sources,
+        }
