@@ -13,6 +13,16 @@ AgentX is a full-stack AI platform that automates end-to-end research: a coordin
 - **Persistent chat sessions** — full conversation history is saved and restored automatically, with a Claude-style sliding sidebar to browse and switch between past chats.
 - **Custom, hand-built UI** — a React + Flask frontend with a warm dark theme, smooth CSS transitions, and a live step-by-step progress checklist while research runs.
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="docs/images/chat-view_1.png" alt="AgentX unified chat interface" width="800"/>
+</p>
+
+<p align="center">
+  <img src="docs/images/chat-view_2.png" alt="AgentX sliding history panel" width="800"/>
+</p>
+
 ## 🧠 Architecture
 
 ```
