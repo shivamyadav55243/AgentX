@@ -1,0 +1,9 @@
+flask
+google-genai
+groq
+python-dotenv
+markdown
+xhtml2pdf
+tavily-python
+huggingface_hub
+pillow
