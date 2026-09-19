@@ -66,27 +66,29 @@ Then open `http://localhost:5000` in your browser.
 
 ## 📁 Project Structure
 
+```
 AgentX/
 ├── agents/
-│ ├── llm.py # Centralized rate-limited LLM client (Groq + Gemini)
-│ ├── planner.py # Breaks topics into sub-questions
-│ ├── researcher.py # Web search + summarization per sub-question
-│ ├── writer.py # Synthesizes findings into a report
-│ ├── critic.py # Fact-checks and requests revisions
-│ ├── chatbot.py # Rodrik, the conversational assistant
-│ ├── router.py # Classifies intent: research / image / chat
-│ └── image_gen.py # AI image generation (Nano Banana + HF fallback)
+│   ├── llm.py          # Centralized rate-limited LLM client (Groq + Gemini)
+│   ├── planner.py       # Breaks topics into sub-questions
+│   ├── researcher.py    # Web search + summarization per sub-question
+│   ├── writer.py        # Synthesizes findings into a report
+│   ├── critic.py        # Fact-checks and requests revisions
+│   ├── chatbot.py       # Rodrik, the conversational assistant
+│   ├── router.py        # Classifies intent: research / image / chat
+│   └── image_gen.py     # AI image generation (Nano Banana + HF fallback)
 ├── storage/
-│ ├── memory.py # Report persistence
-│ ├── sessions.py # Chat session persistence
-│ └── pdf_export.py # Markdown-to-PDF conversion
+│   ├── memory.py        # Report persistence
+│   ├── sessions.py      # Chat session persistence
+│   └── pdf_export.py    # Markdown-to-PDF conversion
 ├── web/
-│ ├── index.html
-│ ├── app.jsx # React frontend
-│ └── style.css
-├── orchestrator.py # Coordinates the full agent pipeline
-├── server.py # Flask backend + API routes
+│   ├── index.html
+│   ├── app.jsx           # React frontend
+│   └── style.css
+├── orchestrator.py       # Coordinates the full agent pipeline
+├── server.py              # Flask backend + API routes
 └── requirements.txt
+```
 
 
 ## 📝 License
