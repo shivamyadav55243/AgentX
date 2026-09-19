@@ -15,17 +15,20 @@ AgentX is a full-stack AI platform that automates end-to-end research: a coordin
 
 ## 🧠 Architecture
 
+```
 User message
-│
-▼
+     │
+     ▼
 Intent Router (classifies: research / image / chat)
-│
-├── research ──► Planner ──► Researcher(s) ──► Writer ──► Critic ──► Report + Image + PDF
-├── image ──► Image Generator (Nano Banana → Hugging Face fallback)
-└── chat ──► Rodrik (conversational assistant)
-
+     │
+     ├── research ──► Planner ──► Researcher(s) ──► Writer ──► Critic ──► Report + Image + PDF
+     ├── image    ──► Image Generator (Nano Banana → Hugging Face fallback)
+     └── chat     ──► Rodrik (conversational assistant)
+```
 
 All LLM calls flow through a single rate-limited client (`agents/llm.py`) that tries Groq first for speed and falls back to Gemini automatically if needed.
+
+
 
 ## 🛠️ Tech Stack
 
