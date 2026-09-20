@@ -6,6 +6,8 @@ from flask import Flask, request, jsonify, send_from_directory, Response
 import queue
 import threading
 import json
+from groq import Groq
+import io
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,6 +23,7 @@ from storage.sessions import (
     get_session,
     save_message,
     get_last_session_id,
+    delete_session,
 )
 
 app = Flask(__name__, static_folder="web", static_url_path="")
@@ -33,6 +36,7 @@ def _b64(data):
 def _md_to_html(text):
     return md.markdown(text or "", extensions=["tables", "fenced_code"])
 
+_groq_whisper_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 @app.route("/")
 def index():
@@ -50,6 +54,25 @@ def get_history():
     ]
     return jsonify(out)
 
+@app.route("/api/transcribe", methods=["POST"])
+def transcribe_audio():
+    if "audio" not in request.files:
+        return jsonify({"error": "no audio file"}), 400
+
+    audio_file = request.files["audio"]
+    audio_bytes = audio_file.read()
+
+    try:
+        print(f"🎙️ Received audio: {len(audio_bytes)} bytes")
+        transcription = _groq_whisper_client.audio.transcriptions.create(
+            file=("audio.webm", io.BytesIO(audio_bytes)),
+            model="whisper-large-v3",
+        )
+        print(f"🎙️ Transcription result: '{transcription.text}'")
+        return jsonify({"text": transcription.text})
+    except Exception as e:
+        print(f"⚠️ Transcription failed: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/history/<int:report_id>", methods=["GET"])
 def get_history_item(report_id):
@@ -70,6 +93,12 @@ def get_history_item(report_id):
     })
 
 
+@app.route("/api/sessions/<session_id>", methods=["DELETE"])
+def delete_session_route(session_id):
+    deleted = delete_session(session_id)
+    if not deleted:
+        return jsonify({"error": "not found"}), 404
+    return jsonify({"deleted": True})
 # ---------- chat sessions (new) ----------
 @app.route("/api/sessions", methods=["GET"])
 def get_sessions():
