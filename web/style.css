@@ -235,3 +235,62 @@ body { background: var(--bg); color: var(--text); font-family: 'Josefin Sans', -
 @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(225,75,75,0.5); } 50% { box-shadow: 0 0 0 8px rgba(225,75,75,0); } }
 .pill-icon-btn.send { background: linear-gradient(135deg, var(--turmeric), var(--turmeric-deep)); color: var(--bg); }
 .pill-icon-btn.send:hover { transform: scale(1.05); }
+
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  width: 340px;
+  text-align: left;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: modalPop 0.25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.94) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-card h3 { margin: 0 0 10px; color: var(--text); font-size: 18px; font-weight: 700; }
+.modal-card p { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.modal-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.modal-btn:hover { transform: translateY(-1px); }
+.modal-btn.cancel {
+  background: var(--card-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.modal-btn.cancel:hover { border-color: var(--muted); }
+.modal-btn.confirm {
+  background: transparent;
+  color: #E14B4B;
+  border: 1.5px solid #E14B4B;
+}
+.modal-btn.confirm:hover { background: rgba(225,75,75,0.12); }

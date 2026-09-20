@@ -75,3 +75,19 @@ def get_last_session_id():
     items = list(sessions.values())
     items.sort(key=lambda s: s["updated"], reverse=True)
     return items[0]["id"]
+
+def delete_session(session_id):
+    sessions = _load_all()
+    if session_id in sessions:
+        del sessions[session_id]
+        _save_all(sessions)
+        return True
+    return False
+
+def delete_session(session_id):
+    sessions = _load_all()
+    if session_id in sessions:
+        del sessions[session_id]
+        _save_all(sessions)
+        return True
+    return False

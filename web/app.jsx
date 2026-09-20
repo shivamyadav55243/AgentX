@@ -18,6 +18,7 @@ function App() {
   const [attachedFile, setAttachedFile] = useState(null);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [reactions, setReactions] = useState({});
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const endRef = useRef(null);
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -28,21 +29,37 @@ function App() {
     setSessions(await res.json());
   }
 
-    async function deleteSession(e, id) {
+  function requestDelete(e, id) {
     e.stopPropagation();
-    if (!confirm("Delete this chat?")) return;
+    setDeleteTarget(id);
+  }
 
-    await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+  async function confirmDelete() {
+    const id = deleteTarget;
+    setDeleteTarget(null);
+    if (!id) return;
 
-    if (id === sessionId) {
-      const remaining = sessions.filter((s) => s.id !== id);
-      if (remaining.length > 0) {
-        loadSession(remaining[0].id);
-      } else {
-        startNewChat();
+    try {
+      const res = await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        console.error("Delete failed:", await res.text());
+        alert("Could not delete this chat. Check the console for details.");
+        return;
       }
+
+      if (id === sessionId) {
+        const remaining = sessions.filter((s) => s.id !== id);
+        if (remaining.length > 0) {
+          loadSession(remaining[0].id);
+        } else {
+          startNewChat();
+        }
+      }
+      refreshSessions();
+    } catch (err) {
+      console.error("Delete request error:", err);
+      alert("Network error while deleting this chat.");
     }
-    refreshSessions();
   }
 
   function shareSession(e, session) {
@@ -318,17 +335,16 @@ function App() {
                 >
                   ↗
                 </button>
-
                 <button
                   className="icon-only-btn danger"
-                  onClick={(e) => deleteSession(e, s.id)}
+                  onClick={(e) => requestDelete(e, s.id)}
                   title="Delete"
                 >
                   🗑
                 </button>
               </div>
             </div>
-))}
+          ))}
         </div>
       </div>
 
@@ -431,6 +447,19 @@ function App() {
           </div>
         </div>
       </div>
+
+            {deleteTarget && (
+        <div className="modal-overlay" onClick={() => setDeleteTarget(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>Delete chat?</h3>
+            <p>Are you sure you want to delete this chat?</p>
+            <div className="modal-actions">
+              <button className="modal-btn cancel" onClick={() => setDeleteTarget(null)}>Cancel</button>
+              <button className="modal-btn confirm" onClick={confirmDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -36,14 +36,16 @@ def _b64(data):
 def _md_to_html(text):
     return md.markdown(text or "", extensions=["tables", "fenced_code"])
 
+
 _groq_whisper_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
 
 @app.route("/")
 def index():
     return send_from_directory(app.static_folder, "index.html")
 
 
-# ---------- report history (existing) ----------
+# ---------- report history ----------
 @app.route("/api/history", methods=["GET"])
 def get_history():
     reports = load_all_reports()
@@ -54,25 +56,6 @@ def get_history():
     ]
     return jsonify(out)
 
-@app.route("/api/transcribe", methods=["POST"])
-def transcribe_audio():
-    if "audio" not in request.files:
-        return jsonify({"error": "no audio file"}), 400
-
-    audio_file = request.files["audio"]
-    audio_bytes = audio_file.read()
-
-    try:
-        print(f"🎙️ Received audio: {len(audio_bytes)} bytes")
-        transcription = _groq_whisper_client.audio.transcriptions.create(
-            file=("audio.webm", io.BytesIO(audio_bytes)),
-            model="whisper-large-v3",
-        )
-        print(f"🎙️ Transcription result: '{transcription.text}'")
-        return jsonify({"text": transcription.text})
-    except Exception as e:
-        print(f"⚠️ Transcription failed: {e}")
-        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/history/<int:report_id>", methods=["GET"])
 def get_history_item(report_id):
@@ -93,13 +76,29 @@ def get_history_item(report_id):
     })
 
 
-@app.route("/api/sessions/<session_id>", methods=["DELETE"])
-def delete_session_route(session_id):
-    deleted = delete_session(session_id)
-    if not deleted:
-        return jsonify({"error": "not found"}), 404
-    return jsonify({"deleted": True})
-# ---------- chat sessions (new) ----------
+# ---------- voice transcription ----------
+@app.route("/api/transcribe", methods=["POST"])
+def transcribe_audio():
+    if "audio" not in request.files:
+        return jsonify({"error": "no audio file"}), 400
+
+    audio_file = request.files["audio"]
+    audio_bytes = audio_file.read()
+
+    try:
+        print(f"🎙️ Received audio: {len(audio_bytes)} bytes")
+        transcription = _groq_whisper_client.audio.transcriptions.create(
+            file=("audio.webm", io.BytesIO(audio_bytes)),
+            model="whisper-large-v3",
+        )
+        print(f"🎙️ Transcription result: '{transcription.text}'")
+        return jsonify({"text": transcription.text})
+    except Exception as e:
+        print(f"⚠️ Transcription failed: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ---------- chat sessions ----------
 @app.route("/api/sessions", methods=["GET"])
 def get_sessions():
     return jsonify(list_sessions())
@@ -124,6 +123,14 @@ def get_session_route(session_id):
     if not session:
         return jsonify({"error": "not found"}), 404
     return jsonify(session)
+
+
+@app.route("/api/sessions/<session_id>", methods=["DELETE"])
+def delete_session_route(session_id):
+    deleted = delete_session(session_id)
+    if not deleted:
+        return jsonify({"error": "not found"}), 404
+    return jsonify({"deleted": True})
 
 
 # ---------- streaming chat/research/image ----------
@@ -211,7 +218,7 @@ def stream_message():
     return Response(generate(), mimetype="text/event-stream")
 
 
-# ---------- non-streaming fallback (kept for compatibility) ----------
+# ---------- non-streaming fallback ----------
 @app.route("/api/message", methods=["POST"])
 def post_message():
     data = request.get_json(force=True) or {}
