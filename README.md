@@ -16,11 +16,11 @@ AgentX is a full-stack AI platform that automates end-to-end research: a coordin
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="docs/images/chat-view_1.png" alt="AgentX unified chat interface" width="800"/>
+  <img src="/docs/images/chat-view1.png" alt="AgentX unified chat interface" width="800"/>
 </p>
 
 <p align="center">
-  <img src="docs/images/chat-view_2.png" alt="AgentX sliding history panel" width="800"/>
+  <img src="docs/images/chat-view2.png" alt="AgentX sliding history panel" width="800"/>
 </p>
 
 ## 🧠 Architecture
